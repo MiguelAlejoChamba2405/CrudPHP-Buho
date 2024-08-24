@@ -72,19 +72,17 @@
                             <!-- Botón para eliminar el usuario -->
                             <form method="POST" action="controller/eliminar_usuario.php" style="display:inline;">
                                 <input type="hidden" name="id_persona" value="<?= $datos->id_persona ?>">
-                                <button type="submit" class="btn btn-danger" onclick="return confirm('¿Estás seguro de que deseas eliminar a esta persona?');">
+                                <button type="submit" class="btn btn-danger"
+                                    onclick="return confirm('¿Estás seguro de que deseas eliminar a esta persona?');">
                                     <i class="fas fa-trash-alt"></i>
                                 </button>
                             </form>
 
                             <!-- Botón que activa el modal para modificar la persona -->
-                            <button type="button" class="btn btn-warning" data-bs-toggle="modal" 
-                                data-bs-target="#modificarPersonasModal"
-                                data-id="<?= $datos->id_persona ?>"
-                                data-nombre="<?= $datos->nombre ?>"
-                                data-apellido="<?= $datos->apellido ?>"
-                                data-dni="<?= $datos->dni ?>"
-                                data-fecha="<?= $datos->fecha_nac ?>"
+                            <button type="button" class="btn btn-warning" data-bs-toggle="modal"
+                                data-bs-target="#modificarPersonasModal" data-id="<?= $datos->id_persona ?>"
+                                data-nombre="<?= $datos->nombre ?>" data-apellido="<?= $datos->apellido ?>"
+                                data-dni="<?= $datos->dni ?>" data-fecha="<?= $datos->fecha_nac ?>"
                                 data-correo="<?= $datos->correo ?>">
                                 <i class="fas fa-edit"></i>
                             </button>
@@ -97,7 +95,8 @@
     </div>
 
     <!-- Modal para modificar personas -->
-    <div class="modal fade" id="modificarPersonasModal" tabindex="-1" aria-labelledby="modificarPersonasModalLabel" aria-hidden="true">
+    <div class="modal fade" id="modificarPersonasModal" tabindex="-1" aria-labelledby="modificarPersonasModalLabel"
+        aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -126,12 +125,14 @@
                             <label for="correo" class="form-label">Correo Electronico</label>
                             <input type="email" class="form-control" id="correo" name="correo">
                         </div>
+                        <input type="hidden" id="id_persona" name="id_persona">
                         <button type="submit" class="btn btn-primary" name="btnModificar" value="ok">Modificar</button>
                     </form>
                 </div>
             </div>
         </div>
     </div>
+
 
     <!-- Modal para mostrar mensaje de éxito -->
     <div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
@@ -142,7 +143,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    Usuario eliminado correctamente.
+                    Usuario modificado correctamente.
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
@@ -153,56 +154,60 @@
 
     <!-- JavaScript Boostrap -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-    
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous">
+    </script>
+
     <!-- Script para manejar el envío del formulario de modificación -->
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            var modificarModal = document.getElementById('modificarPersonasModal');
-            modificarModal.addEventListener('show.bs.modal', function (event) {
-                var button = event.relatedTarget;
-                
-                // Extraer información de los atributos data-
-                var id = button.getAttribute('data-id');
-                var nombre = button.getAttribute('data-nombre');
-                var apellido = button.getAttribute('data-apellido');
-                var dni = button.getAttribute('data-dni');
-                var fecha = button.getAttribute('data-fecha');
-                var correo = button.getAttribute('data-correo');
+    document.addEventListener('DOMContentLoaded', function() {
+        var modificarModal = document.getElementById('modificarPersonasModal');
+        modificarModal.addEventListener('show.bs.modal', function(event) {
+            var button = event.relatedTarget;
 
-                // Actualizar los valores del formulario dentro del modal
-                var modalForm = modificarModal.querySelector('#modificarPersonasForm');
-                modalForm.querySelector('#nombre').value = nombre;
-                modalForm.querySelector('#apellido').value = apellido;
-                modalForm.querySelector('#dni').value = dni;
-                modalForm.querySelector('#fecha').value = fecha;
-                modalForm.querySelector('#correo').value = correo;
+            // Extraer información de los atributos data-
+            var id = button.getAttribute('data-id');
+            var nombre = button.getAttribute('data-nombre');
+            var apellido = button.getAttribute('data-apellido');
+            var dni = button.getAttribute('data-dni');
+            var fecha = button.getAttribute('data-fecha');
+            var correo = button.getAttribute('data-correo');
 
-                // Añadir el campo oculto con el ID del usuario
-                if (!modalForm.querySelector('#id_persona')) {
-                    var inputID = document.createElement('input');
-                    inputID.type = 'hidden';
-                    inputID.name = 'id_persona';
-                    inputID.id = 'id_persona';
-                    modalForm.appendChild(inputID);
-                }
-                modalForm.querySelector('#id_persona').value = id;
-            });
+            // Actualizar los valores del formulario dentro del modal
+            var modalForm = modificarModal.querySelector('#modificarPersonasForm');
+            modalForm.querySelector('#nombre').value = nombre;
+            modalForm.querySelector('#apellido').value = apellido;
+            modalForm.querySelector('#dni').value = dni;
+            modalForm.querySelector('#fecha').value = fecha;
+            modalForm.querySelector('#correo').value = correo;
 
-            // Mostrar el modal de éxito si se pasa el parámetro 'eliminado'
-            const urlParams = new URLSearchParams(window.location.search);
-            if (urlParams.has('eliminado')) {
-                const successModal = new bootstrap.Modal(document.getElementById('successModal'));
-                successModal.show();
+            // Añadir el campo oculto con el ID del usuario
+            var inputID = modalForm.querySelector('#id_persona');
+            if (!inputID) {
+                inputID = document.createElement('input');
+                inputID.type = 'hidden';
+                inputID.name = 'id_persona';
+                inputID.id = 'id_persona';
+                modalForm.appendChild(inputID);
             }
+            inputID.value = id;
         });
 
-        document.getElementById('modificarPersonasForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            var formData = new FormData(this);
-            
-            fetch('controller/registro_personal.php', {
+        // Mostrar el modal de éxito si se pasa el parámetro 'actualizado'
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.has('actualizado')) {
+            const successModal = new bootstrap.Modal(document.getElementById('successModal'));
+            successModal.show();
+            // Limpiar el parámetro después de mostrar el modal
+            window.history.replaceState({}, '', window.location.pathname);
+        }
+    });
+
+    document.getElementById('modificarPersonasForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        var formData = new FormData(this);
+
+        fetch('controller/registro_personal.php', {
                 method: 'POST',
                 body: formData
             })
@@ -211,10 +216,12 @@
                 console.log(data);
                 var modal = bootstrap.Modal.getInstance(document.getElementById('modificarPersonasModal'));
                 modal.hide();
-                window.location.reload(); // Recargar la página para reflejar los cambios
+                window.location.href = window.location.pathname +
+                '?actualizado=true'; // Redirigir con parámetro
             })
             .catch(error => console.error('Error:', error));
-        });
+    });
     </script>
 </body>
+
 </html>

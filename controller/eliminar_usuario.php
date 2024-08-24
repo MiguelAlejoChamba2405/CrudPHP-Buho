@@ -11,17 +11,14 @@ if (isset($_POST['id_persona'])) {
 
     // Ejecuta la consulta
     if ($stmt->execute()) {
-        // Redirige a la página principal con un parámetro de éxito
         header('Location: ../index.php?eliminado=1');
     } else {
-        // En caso de error, redirige con un mensaje de error
         header('Location: ../index.php?error=1');
     }
 
     // Cierra la declaración y la conexión
     $stmt->close();
 } else {
-    // Redirige con un mensaje de error si el ID no se proporciona
     header('Location: ../index.php?error=1');
 }
 
