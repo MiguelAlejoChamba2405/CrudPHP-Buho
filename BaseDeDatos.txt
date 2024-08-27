@@ -1,101 +1,24 @@
 -- Eliminar bd si existe
-DROP DATABASE IF EXISTS crudphp;
+DROP DATABASE IF EXISTS bd_ejercicio_2;
 
 -- Crear la base de datos
-CREATE DATABASE crudphp;
+CREATE DATABASE bd_ejercicio_2;
 
 -- Seleccionar la base de datos
-USE crudphp;
+USE bd_ejercicio_2;
 
--- Crear la tabla Usuarios
-CREATE TABLE Usuario (
-    id_persona INT(11) AUTO_INCREMENT PRIMARY KEY,
-    nombre VARCHAR(50) NOT NULL,
-    apellido VARCHAR(50) NOT NULL,
-    dni VARCHAR(8) NOT NULL,
-    fecha_nac DATE,
-    correo VARCHAR(100)
+-- Crear la tabla ETIQUETAS
+CREATE TABLE etiquetas (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL,
+    color VARCHAR(7) NOT NULL 
 );
 
--- Insertar 15 registros en la tabla Usuarios
-INSERT INTO Usuario (nombre, apellido, dni, fecha_nac, correo) VALUES
-('Juan', 'Pérez', '12345678', '1990-05-15', 'juan.perez@email.com'),
-('María', 'González', '23456789', '1985-08-22', 'maria.gonzalez@email.com'),
-('Carlos', 'Rodríguez', '34567890', '1992-03-10', 'carlos.rodriguez@email.com'),
-('Ana', 'Martínez', '45678901', '1988-11-30', 'ana.martinez@email.com'),
-('Pedro', 'Sánchez', '56789012', '1995-07-18', 'pedro.sanchez@email.com'),
-('Laura', 'López', '67890123', '1987-09-25', 'laura.lopez@email.com'),
-('Miguel', 'Fernández', '78901234', '1993-01-05', 'miguel.fernandez@email.com'),
-('Sofía', 'Díaz', '89012345', '1991-06-12', 'sofia.diaz@email.com'),
-('David', 'Torres', '90123456', '1989-04-20', 'david.torres@email.com'),
-('Elena', 'Ruiz', '01234567', '1994-12-08', 'elena.ruiz@email.com'),
-('Javier', 'Moreno', '12345670', '1986-02-28', 'javier.moreno@email.com'),
-('Carmen', 'Jiménez', '23456701', '1997-10-03', 'carmen.jimenez@email.com'),
-('Alberto', 'Romero', '34567012', '1984-07-14', 'alberto.romero@email.com'),
-('Isabel', 'Navarro', '45670123', '1996-09-19', 'isabel.navarro@email.com'),
-('Roberto', 'Alonso', '56701234', '1990-11-26', 'roberto.alonso@email.com');
-
--- Procedimientos Almacenados
-
--- Procedimientos Almacenados
-
--- Añadir
-DELIMITER //
-CREATE PROCEDURE sp_agregar_usuario(
-    IN p_nombre VARCHAR(50),
-    IN p_apellido VARCHAR(50),
-    IN p_dni VARCHAR(8),
-    IN p_fecha_nac DATE,
-    IN p_correo VARCHAR(100)
-)
-BEGIN
-    INSERT INTO Usuario (nombre, apellido, dni, fecha_nac, correo)
-    VALUES (p_nombre, p_apellido, p_dni, p_fecha_nac, p_correo);
-END //
-DELIMITER ;
-
--- Eliminar
-DELIMITER //
-CREATE PROCEDURE sp_eliminar_usuario(
-    IN p_id_persona INT
-)
-BEGIN
-    DELETE FROM Usuario WHERE id_persona = p_id_persona;
-END //
-DELIMITER ;
-
--- Editar
-DELIMITER //
-CREATE PROCEDURE sp_editar_usuario(
-    IN p_id_persona INT,
-    IN p_nombre VARCHAR(50),
-    IN p_apellido VARCHAR(50),
-    IN p_dni VARCHAR(8),
-    IN p_fecha_nac DATE,
-    IN p_correo VARCHAR(100)
-)
-BEGIN
-    UPDATE Usuario
-    SET nombre = p_nombre,
-        apellido = p_apellido,
-        dni = p_dni,
-        fecha_nac = p_fecha_nac,
-        correo = p_correo
-    WHERE id_persona = p_id_persona;
-END //
-DELIMITER ;
-
--- Editar (Numero)
-DELIMITER //
-CREATE PROCEDURE sp_editar_usuario_numero(
-    IN p_id_persona INT,
-    IN p_campo VARCHAR(20),
-    IN p_valor VARCHAR(100)
-)
-BEGIN 
-    SET @query = CONCAT('UPDATE Usuario SET ', p_campo, ' = ? WHERE id_persona = ?');
-    PREPARE stmt FROM @query;
-    EXECUTE stmt USING p_valor, p_id_persona;
-    DEALLOCATE PREPARE stmt;
-END //
-DELIMITER ;
+-- Crear la tabla USUARIOS
+CREATE TABLE usuarios (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL,
+    numero VARCHAR(15) NOT NULL,
+    etiquetas INT,
+    FOREIGN KEY (etiquetas) REFERENCES etiquetas(id)
+);
