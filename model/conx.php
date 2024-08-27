@@ -2,6 +2,6 @@
     $conexion = new mysqli("localhost", 
                             "root", 
                             "", 
-                            "crudphp");
+                            "bd_ejercicio_2");
     $conexion->set_charset("utf8");
 ?>
