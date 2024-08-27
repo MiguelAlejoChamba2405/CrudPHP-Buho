@@ -185,7 +185,7 @@
             form.submit();
         });
     </script>
-        <script type="text/javascript" src="script.js"></script>
+        <script type="text/javascript" src="Scripts/script.js"></script>
 
 </body>
 
