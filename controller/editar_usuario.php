@@ -1,32 +1,26 @@
 <?php
-// controller/registro_personal.php
-include '../model/conx.php';
+include "../model/conx.php";
 
-if (isset($_POST['btnModificar'])) {
-    // Capturar los valores del formulario
-    $id_usuario = $_POST['id_usuario'];  
-    $nombre = $_POST['m_usuario_nombre'];
-    $numero = $_POST['m_usuario_numero'];
-    $etiqueta = $_POST['m_etiqueta_id'];
+if (isset($_POST['id'])) {
+    $id = $_POST['id'];
+    $nombre = $_POST['nombre'];
+    $numero = $_POST['numero'];
+    $etiqueta = $_POST['etiqueta_id']; // Asegúrate de que este campo sea 'etiqueta_id'
 
-    // Verifica que las variables no estén vacías antes de proceder
-    if (!empty($nombre) && !empty($numero) && !empty($etiqueta)) {
-        // Preparar la consulta para actualizar el usuario
-        $stmt = $conexion->prepare("UPDATE usuarios SET nombre = ?, numero = ?, etiqueta_id = ? WHERE id = ?");
-        $stmt->bind_param('sssi', $nombre, $numero, $etiqueta, $id_usuario);
+    // Corrección de la consulta SQL (campo `etiquetas` debe ser `etiqueta_id`)
+    $stmt = $conexion->prepare("UPDATE usuarios SET nombre=?, numero=?, etiquetas=? WHERE id=?");
+    $stmt->bind_param('sssi', $nombre, $numero, $etiqueta, $id);
 
-        // Ejecuta la consulta y verifica si se realizó correctamente
-        if ($stmt->execute()) {
-            echo 'Usuario modificado correctamente.';
-        } else {
-            echo 'Error al modificar el usuario: ' . $stmt->error;
-        }
-        $stmt->close();
+    if ($stmt->execute()) {
+        // Redirigir con mensaje de éxito
+        header("Location: ../usuarios.php?message=Usuario actualizado correctamente.");
     } else {
-        echo 'Todos los campos son obligatorios.';
+        // Redirigir con mensaje de error
+        header("Location: ../usuarios.php?message=Error al actualizar el usuario: " . $stmt->error);
     }
 
-    // Cierra la conexión
+    $stmt->close();
     $conexion->close();
+    exit;
 }
 ?>

@@ -46,10 +46,10 @@
             <table class="table">
                 <thead class="bg-info">
                     <tr>
-                        <th scope="col">ID</th>
                         <th scope="col">NOMBRES</th>
                         <th scope="col">NÚMERO</th>
                         <th scope="col">ETIQUETA</th>
+                        <th scope="col">ACCIONES</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -59,7 +59,6 @@
                                              LEFT JOIN etiquetas ON usuarios.etiquetas = etiquetas.id");
                     while ($datos = $sql->fetch_object()) { ?>
                         <tr>
-                            <td><?= $datos->id ?></td>
                             <td><?= $datos->nombre ?></td>
                             <td><?= $datos->numero ?></td>
                             <td><?= $datos->etiqueta_nombre ?> <span style="color:<?= $datos->color ?>">&#9679;</span></td>
@@ -73,69 +72,84 @@
                                     </button>
                                 </form>
 
-                                <!-- Botón que activa el modal para modificar la persona -->
+                                <!-- Botón que activa el modal para modificar la etiqueta -->
                                 <button type="button" class="btn btn-warning" data-bs-toggle="modal"
-                                    data-bs-target="#modificarPersonasModal" data-id="<?= $datos->id ?>"
-                                    data-nombre="<?= $datos->nombre ?>" data-numero="<?= $datos->numero ?>"
-                                    data-etiqueta="<?= $datos->etiquetas ?>">
-                                    <i class="fas fa-edit"></i>
+                                    data-bs-target="#editModal-<?= $datos->id ?>"
+                                    data-nombre="<?= $datos->etiqueta_nombre ?>" data-color="<?= $datos->color ?>"
+                                    data-numero="<?= $datos->numero ?>">
+                                    <i class="fa-solid fa-pen"></i>
                                 </button>
-                            </td>
-                        </tr>
-                    <?php } ?>
+
+                                <!-- Modal -->
+
+                                <div class="modal fade" id="editModal-<?= $datos->id ?>" tabindex="-1"
+                                    aria-labelledby="editModalLabel-<?= $datos->id ?>" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="editModalLabel-<?= $datos->id ?>">Modificar
+                                                    Etiqueta</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                    aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <form action="controller/editar_usuario.php" method="POST">
+                                                    <input type="hidden" name="id" value="<?= $datos->id ?>">
+                                                    <div class="mb-3">
+                                                        <label for="nombre-<?= $datos->id ?>"
+                                                            class="form-label">Nombre</label>
+                                                        <input type="text" class="form-control"
+                                                            id="nombre-<?= $datos->id ?>" name="nombre"
+                                                            value="<?= $datos->nombre ?>">
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <label for="numero-<?= $datos->id ?>"
+                                                            class="form-label">Número</label>
+                                                        <input type="number" class="form-control"
+                                                            id="numero-<?= $datos->id ?>" name="numero"
+                                                            value="<?= $datos->numero ?>">
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <label for="etiqueta_id" class="form-label">Etiqueta</label>
+                                                        <select class="form-select" id="etiqueta_id" name="etiqueta_id"
+                                                            required>
+                                                            <option value="" selected disabled>Selecciona una etiqueta
+                                                            </option>
+                                                            <?php
+                                                            $sql = $conexion->query("SELECT * FROM etiquetas");
+                                                            while ($etiqueta = $sql->fetch_object()) { ?>
+                                                                <option value="<?= $etiqueta->id ?>"><?= $etiqueta->nombre ?>
+                                                                </option>
+                                                            <?php } ?>
+                                                        </select>
+                                                    </div>
+                                                    <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                                                    <button type="button" class="btn btn-secondary"
+                                                        data-bs-dismiss="modal">Salir</button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            <?php } ?>
                 </tbody>
             </table>
             <a href="etiquetas.php" class="btn btn-primary">Ir a Etiquetas</a>
         </div>
     </div>
 
-    <!-- Modal para modificar personas -->
-    <div class="modal fade" id="modificarPersonasModal" tabindex="-1" aria-labelledby="modificarPersonasModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="modificarPersonasModalLabel">Modificar Personas</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="modificarPersonasForm" method="POST">
-                        <div class="mb-3">
-                            <label for="m_usuario_nombre" class="form-label">Nombre</label>
-                            <input type="text" class="form-control" id="m_usuario_nombre" name="m_usuario_nombre" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="m_usuario_numero" class="form-label">Número</label>
-                            <input type="number" class="form-control" id="m_usuario_numero" name="m_usuario_numero" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="m_etiqueta_id" class="form-label">Etiqueta</label>
-                            <select class="form-select" id="m_etiqueta_id" name="m_etiqueta_id" required>
-                                <?php
-                                $sql = $conexion->query("SELECT * FROM etiquetas");
-                                while ($etiqueta = $sql->fetch_object()) { ?>
-                                    <option value="<?= $etiqueta->id ?>"><?= $etiqueta->nombre ?> (<?= $etiqueta->color ?>)</option>
-                                <?php } ?>
-                            </select>
-                        </div>
-                        <input type="hidden" id="id_usuario" name="id_usuario">
-                        <button type="submit" class="btn btn-primary" name="btnModificar" value="ok">Modificar</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
+
 
     <!-- JavaScript Bootstrap -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous">
-    </script>
+        </script>
 
     <!-- Script para manejar el envío del formulario de modificación -->
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             var modificarModal = document.getElementById('modificarPersonasModal');
-            modificarModal.addEventListener('show.bs.modal', function(event) {
+            modificarModal.addEventListener('show.bs.modal', function (event) {
                 var button = event.relatedTarget;
 
                 // Extraer información de los atributos data-
@@ -172,7 +186,7 @@
             }
         });
 
-        document.getElementById('modificarPersonasForm').addEventListener('submit', function(e) {
+        document.getElementById('modificarPersonasForm').addEventListener('submit', function (e) {
             e.preventDefault();
 
             var form = this;
@@ -185,7 +199,7 @@
             form.submit();
         });
     </script>
-        <script type="text/javascript" src="Scripts/script.js"></script>
+    <script type="text/javascript" src="Scripts/script.js"></script>
 
 </body>
 
