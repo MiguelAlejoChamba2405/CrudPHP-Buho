@@ -22,3 +22,12 @@ CREATE TABLE usuarios (
     etiquetas INT,
     FOREIGN KEY (etiquetas) REFERENCES etiquetas(id)
 );
+
+--Nueva tabla para poder guardar mas de una etiqueta :D
+CREATE TABLE usuario_etiquetas (
+    usuario_id INT NOT NULL,
+    etiqueta_id INT NOT NULL,
+    FOREIGN KEY (usuario_id) REFERENCES usuarios(id),
+    FOREIGN KEY (etiqueta_id) REFERENCES etiquetas(id),
+    PRIMARY KEY (usuario_id, etiqueta_id)
+);

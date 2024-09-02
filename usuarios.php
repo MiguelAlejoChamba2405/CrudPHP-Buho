@@ -30,9 +30,9 @@
                 <input type="number" class="form-control" id="usuario_numero" name="usuario_numero" required>
             </div>
             <div class="mb-3">
-                <label for="etiqueta_id" class="form-label">Etiqueta</label>
-                <select class="form-select" id="etiqueta_id" name="etiqueta_id" required>
-                    <option value="" selected disabled>Selecciona una etiqueta</option>
+                <label for="etiqueta_id" class="form-label">Etiquetas</label>
+                <select class="form-select" id="etiqueta_id" name="etiqueta_id[]" multiple required>
+                    <option value="" disabled>Selecciona una o más etiquetas</option>
                     <?php
                     $sql = $conexion->query("SELECT * FROM etiquetas");
                     while ($etiqueta = $sql->fetch_object()) { ?>
@@ -41,97 +41,115 @@
                 </select>
             </div>
             <button type="submit" class="btn btn-primary" name="btnregistrar" value="ok">Registrar</button>
-            
+
         </form>
         <div class="col-8 p-4">
-        <?php
-include "model/conx.php";
-$sql = $conexion->query("SELECT usuarios.id, usuarios.nombre, usuarios.numero, etiquetas.nombre AS etiqueta_nombre, etiquetas.color 
-                         FROM usuarios 
-                         LEFT JOIN etiquetas ON usuarios.etiquetas = etiquetas.id");
+            <?php
+            include "model/conx.php";
+            $sql = $conexion->query("SELECT usuarios.id, usuarios.nombre, usuarios.numero, GROUP_CONCAT(etiquetas.nombre SEPARATOR ', ') AS etiqueta_nombre, GROUP_CONCAT(etiquetas.color SEPARATOR ', ') AS colores
+    FROM usuarios 
+    LEFT JOIN usuario_etiquetas ON usuarios.id = usuario_etiquetas.usuario_id
+    LEFT JOIN etiquetas ON usuario_etiquetas.etiqueta_id = etiquetas.id
+    GROUP BY usuarios.id");
 
-?>
-<table class="table">
-    <thead>
-        <tr>
-            <th scope="col">NOMBRE</th>
-            <th scope="col">NÚMERO</th>
-            <th scope="col">ETIQUETA</th>
-            <th scope="col">ACCIONES</th>
-        </tr>
-    </thead>
-    <tbody>
-        <?php
-        $sql->data_seek(0); // Reinicia el puntero de resultados
-        while ($datos = $sql->fetch_object()) { ?>
-            <tr>
-                <td><?= $datos->nombre ?></td>
-                <td><?= $datos->numero ?></td>
-                <td><?= $datos->etiqueta_nombre ?> <span style="color:<?= $datos->color ?>">&#9679;</span></td>
-                <td>
-                    <!-- Botón para eliminar el usuario -->
-                    <form method="POST" action="controller/eliminar_usuario.php" style="display:inline;">
-                        <input type="hidden" name="id_usuario" value="<?= $datos->id ?>">
-                        <button type="submit" class="btn btn-danger"
-                            onclick="return confirm('¿Estás seguro de que deseas eliminar a esta persona?');">
-                            <i class="fas fa-trash-alt"></i>
-                        </button>
-                    </form>
+            ?>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col">NOMBRE</th>
+                        <th scope="col">NÚMERO</th>
+                        <th scope="col">ETIQUETA</th>
+                        <th scope="col">ACCIONES</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php
+                    $sql->data_seek(0); // Reinicia el puntero de resultados
+                    while ($datos = $sql->fetch_object()) { ?>
+                        <tr>
+                            <td><?= $datos->nombre ?></td>
+                            <td><?= $datos->numero ?></td>
+                            <td><?= $datos->etiqueta_nombre ?> <span style="color:<?= $datos->colores ?>">&#9679;</span>
+                            </td>
+                            </td>
 
-                    <!-- Botón que activa el modal para modificar la etiqueta -->
-                    <button type="button" class="btn btn-warning" data-bs-toggle="modal"
-                        data-bs-target="#editModal-<?= $datos->id ?>"
-                        data-nombre="<?= $datos->etiqueta_nombre ?>" data-color="<?= $datos->color ?>"
-                        data-numero="<?= $datos->numero ?>">
-                        <i class="fa-solid fa-pen"></i>
-                    </button>
+                            <td>
+                                <!-- Botón para eliminar el usuario -->
+                                <form method="POST" action="controller/eliminar_usuario.php" style="display:inline;">
+                                    <input type="hidden" name="id_usuario" value="<?= $datos->id ?>">
+                                    <button type="submit" class="btn btn-danger"
+                                        onclick="return confirm('¿Estás seguro de que deseas eliminar a esta persona?');">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </button>
+                                </form>
 
-                    <!-- Modal -->
-                    <div class="modal fade" id="editModal-<?= $datos->id ?>" tabindex="-1"
-                        aria-labelledby="editModalLabel-<?= $datos->id ?>" aria-hidden="true">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title" id="editModalLabel-<?= $datos->id ?>">Modificar Etiqueta</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                        aria-label="Close"></button>
+                                <!-- Botón que activa el modal para modificar la etiqueta -->
+                                <button type="button" class="btn btn-warning" data-bs-toggle="modal"
+                                    data-bs-target="#editModal-<?= $datos->id ?>"
+                                    data-nombre="<?= $datos->etiqueta_nombre ?>" data-color="<?= $datos->color ?>"
+                                    data-numero="<?= $datos->numero ?>">
+                                    <i class="fa-solid fa-pen"></i>
+                                </button>
+
+                                <!-- Modal -->
+                                <div class="modal fade" id="editModal-<?= $datos->id ?>" tabindex="-1"
+                                    aria-labelledby="editModalLabel-<?= $datos->id ?>" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="editModalLabel-<?= $datos->id ?>">Modificar
+                                                    Etiqueta</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                    aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <form action="controller/editar_usuario.php" method="POST">
+                                                    <input type="hidden" name="id" value="<?= $datos->id ?>">
+                                                    <div class="mb-3">
+                                                        <label for="nombre-<?= $datos->id ?>"
+                                                            class="form-label">Nombre</label>
+                                                        <input type="text" class="form-control"
+                                                            id="nombre-<?= $datos->id ?>" name="nombre"
+                                                            value="<?= $datos->nombre ?>">
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <label for="numero-<?= $datos->id ?>"
+                                                            class="form-label">Número</label>
+                                                        <input type="number" class="form-control"
+                                                            id="numero-<?= $datos->id ?>" name="numero"
+                                                            value="<?= $datos->numero ?>">
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <label for="etiqueta_id" class="form-label">Etiquetas</label>
+                                                        <select class="form-select" id="etiqueta_id" name="etiqueta_id[]"
+                                                            multiple required>
+                                                            <option value="" disabled>Selecciona una o más etiquetas
+                                                            </option>
+                                                            <?php
+                                                            $etiquetasSql = $conexion->query("SELECT * FROM etiquetas");
+                                                            $usuario_etiquetas = []; // Recupera las etiquetas del usuario actual desde la base de datos
+                                                            while ($etiqueta = $etiquetasSql->fetch_object()) {
+                                                                $selected = in_array($etiqueta->id, $usuario_etiquetas) ? 'selected' : '';
+                                                                ?>
+                                                                <option value="<?= $etiqueta->id ?>" <?= $selected ?>>
+                                                                    <?= $etiqueta->nombre ?>
+                                                                </option>
+                                                            <?php } ?>
+                                                        </select>
+                                                    </div>
+                                                    <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                                                    <button type="button" class="btn btn-secondary"
+                                                        data-bs-dismiss="modal">Salir</button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="modal-body">
-                                    <form action="controller/editar_usuario.php" method="POST">
-                                        <input type="hidden" name="id" value="<?= $datos->id ?>">
-                                        <div class="mb-3">
-                                            <label for="nombre-<?= $datos->id ?>" class="form-label">Nombre</label>
-                                            <input type="text" class="form-control" id="nombre-<?= $datos->id ?>" name="nombre"
-                                                value="<?= $datos->nombre ?>">
-                                        </div>
-                                        <div class="mb-3">
-                                            <label for="numero-<?= $datos->id ?>" class="form-label">Número</label>
-                                            <input type="number" class="form-control" id="numero-<?= $datos->id ?>" name="numero"
-                                                value="<?= $datos->numero ?>">
-                                        </div>
-                                        <div class="mb-3">
-                                            <label for="etiqueta_id" class="form-label">Etiqueta</label>
-                                            <select class="form-select" id="etiqueta_id" name="etiqueta_id" required>
-                                                <option value="" selected disabled>Selecciona una etiqueta</option>
-                                                <?php
-                                                $etiquetasSql = $conexion->query("SELECT * FROM etiquetas");
-                                                while ($etiqueta = $etiquetasSql->fetch_object()) { ?>
-                                                    <option value="<?= $etiqueta->id ?>"><?= $etiqueta->nombre ?></option>
-                                                <?php } ?>
-                                            </select>
-                                        </div>
-                                        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
-                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Salir</button>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </td>
-            </tr>
-        <?php } ?>
-    </tbody>
-</table>
+                            </td>
+                        </tr>
+                    <?php } ?>
+                </tbody>
+            </table>
             <a href="etiquetas.php" class="btn btn-primary">Ir a Etiquetas</a>
         </div>
     </div>

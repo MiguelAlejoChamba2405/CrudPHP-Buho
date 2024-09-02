@@ -5,21 +5,44 @@ if (isset($_POST['id'])) {
     $id = $_POST['id'];
     $nombre = $_POST['nombre'];
     $numero = $_POST['numero'];
-    $etiqueta = $_POST['etiqueta_id']; // Asegúrate de que este campo sea 'etiqueta_id'
+    $etiquetas = $_POST['etiqueta_id']; // Este es un array con los IDs de las etiquetas seleccionadas
 
-    // Corrección de la consulta SQL (campo `etiquetas` debe ser `etiqueta_id`)
-    $stmt = $conexion->prepare("UPDATE usuarios SET nombre=?, numero=?, etiquetas=? WHERE id=?");
-    $stmt->bind_param('sssi', $nombre, $numero, $etiqueta, $id);
+    // Iniciar transacción para asegurar consistencia
+    $conexion->begin_transaction();
 
-    if ($stmt->execute()) {
+    try {
+        // Actualizar información del usuario
+        $stmt = $conexion->prepare("UPDATE usuarios SET nombre=?, numero=? WHERE id=?");
+        $stmt->bind_param('ssi', $nombre, $numero, $id);
+        $stmt->execute();
+        $stmt->close();
+
+        // Eliminar etiquetas actuales del usuario
+        $stmt = $conexion->prepare("DELETE FROM usuario_etiquetas WHERE usuario_id=?");
+        $stmt->bind_param('i', $id);
+        $stmt->execute();
+        $stmt->close();
+
+        // Insertar nuevas etiquetas
+        $stmt = $conexion->prepare("INSERT INTO usuario_etiquetas (usuario_id, etiqueta_id) VALUES (?, ?)");
+        foreach ($etiquetas as $etiqueta_id) {
+            $stmt->bind_param('ii', $id, $etiqueta_id);
+            $stmt->execute();
+        }
+        $stmt->close();
+
+        // Confirmar transacción
+        $conexion->commit();
+
         // Redirigir con mensaje de éxito
         header("Location: ../usuarios.php?message=Usuario actualizado correctamente.");
-    } else {
+    } catch (Exception $e) {
+        // Revertir transacción en caso de error
+        $conexion->rollback();
         // Redirigir con mensaje de error
-        header("Location: ../usuarios.php?message=Error al actualizar el usuario: " . $stmt->error);
+        header("Location: ../usuarios.php?message=Error al actualizar el usuario: " . $e->getMessage());
     }
 
-    $stmt->close();
     $conexion->close();
     exit;
 }
