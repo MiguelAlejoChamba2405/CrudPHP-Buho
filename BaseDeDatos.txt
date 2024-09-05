@@ -31,3 +31,21 @@ CREATE TABLE usuario_etiquetas (
     FOREIGN KEY (etiqueta_id) REFERENCES etiquetas(id),
     PRIMARY KEY (usuario_id, etiqueta_id)
 );
+
+--Nueva tabla para guardar reuniones
+
+CREATE TABLE IF NOT EXISTS reuniones (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(255) NOT NULL,
+    fecha_inicio DATETIME NOT NULL,
+    fecha_fin DATETIME NOT NULL
+);
+
+--Tabla donde se guardaran las etiquetas de reunion
+CREATE TABLE reunion_etiquetas (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    reunion_id INT,
+    etiqueta_id INT,
+    FOREIGN KEY (reunion_id) REFERENCES reuniones(id),
+    FOREIGN KEY (etiqueta_id) REFERENCES etiquetas(id)
+);

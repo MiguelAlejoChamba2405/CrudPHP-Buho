@@ -151,6 +151,7 @@
                 </tbody>
             </table>
             <a href="etiquetas.php" class="btn btn-primary">Ir a Etiquetas</a>
+            <a href="reuniones.php" class="btn btn-primary">Ir a Reuniones</a>
         </div>
     </div>
 

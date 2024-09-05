@@ -104,6 +104,7 @@
                 </tbody>
             </table>
             <a href="usuarios.php" class="btn btn-primary">Ir a Usuarios</a>
+            <a href="reuniones.php" class="btn btn-primary">Ir a Reuniones</a>
         </div>
     </div>
     <!--script bootstrap-->
