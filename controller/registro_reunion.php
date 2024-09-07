@@ -23,11 +23,6 @@ if (isset($_POST['btn_submit'])) {
         }
         $stmt_etiquetas->close();
 
-        // Redirige o muestra un mensaje de éxito
-        echo "<script>alert('Reunión registrada con éxito'); window.location='reuniones.php';</script>";
-    } else {
-        // En caso de error
-        echo "<script>alert('Error al registrar la reunión');</script>";
-    }
+    } 
 }
 ?>

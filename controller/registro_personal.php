@@ -1,8 +1,8 @@
 <?php
-if (isset($_POST['btnregistrar'])) {
+if (isset($_POST['btn_submit'])) {
     $nombre = $_POST['usuario_nombre'];
     $numero = $_POST['usuario_numero'];
-    $etiquetas = $_POST['etiqueta_id']; // Array de IDs de etiquetas
+    $etiquetas = $_POST['etiqueta_id']; 
 
     // Insertar el usuario
     $conexion->query("INSERT INTO usuarios (nombre, numero) VALUES ('$nombre', '$numero')");
