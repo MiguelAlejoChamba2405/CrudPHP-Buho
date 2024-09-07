@@ -23,7 +23,7 @@ CREATE TABLE usuarios (
     FOREIGN KEY (etiquetas) REFERENCES etiquetas(id)
 );
 
---Nueva tabla para poder guardar mas de una etiqueta :D
+-- Nueva tabla para poder guardar mas de una etiqueta :D
 CREATE TABLE usuario_etiquetas (
     usuario_id INT NOT NULL,
     etiqueta_id INT NOT NULL,
@@ -32,8 +32,7 @@ CREATE TABLE usuario_etiquetas (
     PRIMARY KEY (usuario_id, etiqueta_id)
 );
 
---Nueva tabla para guardar reuniones
-
+-- Nueva tabla para guardar reuniones
 CREATE TABLE IF NOT EXISTS reuniones (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(255) NOT NULL,
@@ -41,7 +40,7 @@ CREATE TABLE IF NOT EXISTS reuniones (
     fecha_fin DATETIME NOT NULL
 );
 
---Tabla donde se guardaran las etiquetas de reunion
+-- Tabla donde se guardaran las etiquetas de reunion
 CREATE TABLE reunion_etiquetas (
     id INT AUTO_INCREMENT PRIMARY KEY,
     reunion_id INT,
