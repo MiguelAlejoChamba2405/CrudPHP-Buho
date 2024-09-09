@@ -14,58 +14,74 @@
             background-color: #f8f9fa;
             font-family: Arial, sans-serif;
         }
+
         .navbar {
             background-color: #343a40;
         }
+
         .navbar-nav .nav-link {
             color: #ffffff !important;
         }
+
         .navbar-nav .nav-link:hover {
             color: #adb5bd !important;
         }
+
         .table {
             margin-top: 20px;
             border-radius: 0.5rem;
             overflow: hidden;
         }
+
         .table thead th {
             background-color: #495057;
             color: #ffffff;
         }
+
         .table tbody tr:nth-child(odd) {
             background-color: #ffffff;
         }
+
         .table tbody tr:nth-child(even) {
             background-color: #f1f3f5;
         }
+
         .modal-header {
             background-color: #343a40;
             color: #ffffff;
         }
+
         .modal-footer {
             background-color: #f8f9fa;
         }
+
         .btn-primary {
             background-color: #007bff;
             border: none;
         }
+
         .btn-primary:hover {
             background-color: #0056b3;
         }
+
         .btn-danger {
             background-color: #dc3545;
             border: none;
         }
+
         .btn-danger:hover {
             background-color: #c82333;
         }
+
         .btn-warning {
             background-color: #ffc107;
             border: none;
         }
+
         .btn-warning:hover {
             background-color: #e0a800;
         }
+
         .label-box {
             display: inline-block;
             padding: 5px 10px;
@@ -131,9 +147,9 @@
                                     <td class="text-center">
                                         <?php
                                         $etiquetas_query = $conexion->query("SELECT etiquetas.nombre, etiquetas.color 
-                                        FROM reunion_etiquetas 
-                                        JOIN etiquetas ON reunion_etiquetas.etiqueta_id = etiquetas.id 
-                                        WHERE reunion_etiquetas.reunion_id = $datos->id");
+                            FROM reunion_etiquetas 
+                            JOIN etiquetas ON reunion_etiquetas.etiqueta_id = etiquetas.id 
+                            WHERE reunion_etiquetas.reunion_id = $datos->id");
                                         if ($etiquetas_query) {
                                             while ($etiqueta = $etiquetas_query->fetch_object()) {
                                                 echo "<span class='label-box' style='background-color: " . htmlspecialchars($etiqueta->color) . "'>" . htmlspecialchars($etiqueta->nombre) . "</span> ";
@@ -157,8 +173,96 @@
                                             data-bs-target="#editModal-<?= $datos->id ?>">
                                             <i class="fa-solid fa-pen"></i>
                                         </button>
+                                        <!-- Botón para ver contactos -->
+                                        <button class="btn btn-info" data-bs-toggle="modal"
+                                            data-bs-target="#contactModal-<?= $datos->id ?>">
+                                            Ver Contactos
+                                        </button>
+                                        <!-- Botón para mensaje -->
+                                        <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                                            data-bs-target="#messageModal-<?= $datos->id ?>">
+                                            Mensaje
+                                        </button>
+
+                                        <!-- Modal para enviar mensaje -->
+                                        <div class="modal fade" id="messageModal-<?= $datos->id ?>" tabindex="-1"
+                                            aria-labelledby="messageModalLabel-<?= $datos->id ?>" aria-hidden="true">
+                                            <div class="modal-dialog">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title" id="messageModalLabel-<?= $datos->id ?>">Enviar
+                                                            Mensaje</h5>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                            aria-label="Close"></button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <form action="reuniones.php" method="POST">
+                                                            <input type="hidden" name="reunion_id" value="<?= $datos->id ?>">
+                                                            <div class="mb-3">
+                                                                <label for="mensaje" class="form-label">Mensaje</label>
+                                                                <textarea class="form-control" id="mensaje" name="mensaje"
+                                                                    rows="4" required></textarea>
+                                                            </div>
+                                                            <button type="submit" class="btn btn-primary">Listo</button>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </td>
                                 </tr>
+
+                                <!-- Modal para ver contactos -->
+                                <div class="modal fade" id="contactModal-<?= $datos->id ?>" tabindex="-1"
+                                    aria-labelledby="contactModalLabel-<?= $datos->id ?>" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="contactModalLabel-<?= $datos->id ?>">Contactos para
+                                                    la Reunión: <?= htmlspecialchars($datos->nombre) ?></h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                    aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <?php
+                                                // Obtener los IDs de las etiquetas asociadas a la reunión
+                                                $etiquetas_ids_query = $conexion->query("
+                                        SELECT etiqueta_id 
+                                        FROM reunion_etiquetas 
+                                        WHERE reunion_id = $datos->id
+                                    ");
+
+                                                $usuario_ids = [];
+
+                                                // Para cada etiqueta obtenida, encontrar los usuarios asociados
+                                                while ($etiqueta_id_obj = $etiquetas_ids_query->fetch_object()) {
+                                                    $etiqueta_id = $etiqueta_id_obj->etiqueta_id;
+
+                                                    $usuarios_query = $conexion->query("
+                                            SELECT u.id, u.nombre 
+                                            FROM usuario_etiquetas ue
+                                            JOIN usuarios u ON ue.usuario_id = u.id
+                                            WHERE ue.etiqueta_id = $etiqueta_id
+                                        ");
+
+                                                    if ($usuarios_query) {
+                                                        while ($usuario = $usuarios_query->fetch_object()) {
+                                                            if (!in_array($usuario->id, $usuario_ids)) {
+                                                                $usuario_ids[] = $usuario->id;
+                                                                echo "<div>" . htmlspecialchars($usuario->nombre) . "</div>";
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                                ?>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary"
+                                                    data-bs-dismiss="modal">Cerrar</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
 
                                 <!-- Modal para editar la reunión -->
                                 <div class="modal fade" id="editModal-<?= $datos->id ?>" tabindex="-1"
@@ -166,7 +270,8 @@
                                     <div class="modal-dialog">
                                         <div class="modal-content">
                                             <div class="modal-header">
-                                                <h5 class="modal-title" id="editModalLabel-<?= $datos->id ?>">Modificar Reunión</h5>
+                                                <h5 class="modal-title" id="editModalLabel-<?= $datos->id ?>">Modificar Reunión
+                                                </h5>
                                                 <button type="button" class="btn-close" data-bs-dismiss="modal"
                                                     aria-label="Close"></button>
                                             </div>
@@ -179,7 +284,8 @@
                                                             name="nombre" value="<?= htmlspecialchars($datos->nombre) ?>">
                                                     </div>
                                                     <div class="mb-3">
-                                                        <label for="etiquetas-<?= $datos->id ?>" class="form-label">Etiquetas</label>
+                                                        <label for="etiquetas-<?= $datos->id ?>"
+                                                            class="form-label">Etiquetas</label>
                                                         <select class="form-select" id="etiquetas-<?= $datos->id ?>"
                                                             name="etiquetas[]" multiple>
                                                             <?php
@@ -190,21 +296,23 @@
                                                                 $selected_etiquetas[] = $etiqueta_selec->etiqueta_id;
                                                             }
                                                             while ($etiqueta = $etiquetas->fetch_object()) { ?>
-                                                                <option value="<?= $etiqueta->id ?>"
-                                                                    <?php if (in_array($etiqueta->id, $selected_etiquetas)) echo 'selected'; ?>>
+                                                                <option value="<?= $etiqueta->id ?>" <?php if (in_array($etiqueta->id, $selected_etiquetas))
+                                                                      echo 'selected'; ?>>
                                                                     <?= htmlspecialchars($etiqueta->nombre) ?>
                                                                 </option>
                                                             <?php } ?>
                                                         </select>
                                                     </div>
                                                     <div class="mb-3">
-                                                        <label for="fecha_inicio-<?= $datos->id ?>" class="form-label">Fecha Inicio</label>
+                                                        <label for="fecha_inicio-<?= $datos->id ?>" class="form-label">Fecha
+                                                            Inicio</label>
                                                         <input type="datetime-local" class="form-control"
                                                             id="fecha_inicio-<?= $datos->id ?>" name="fecha_inicio"
                                                             value="<?= date('Y-m-d\TH:i', strtotime($datos->fecha_inicio)) ?>">
                                                     </div>
                                                     <div class="mb-3">
-                                                        <label for="fecha_fin-<?= $datos->id ?>" class="form-label">Fecha Final</label>
+                                                        <label for="fecha_fin-<?= $datos->id ?>" class="form-label">Fecha
+                                                            Final</label>
                                                         <input type="datetime-local" class="form-control"
                                                             id="fecha_fin-<?= $datos->id ?>" name="fecha_fin"
                                                             value="<?= date('Y-m-d\TH:i', strtotime($datos->fecha_fin)) ?>">
@@ -217,9 +325,9 @@
                                         </div>
                                     </div>
                                 </div>
-                        <?php }
+                            <?php }
                         } else {
-                            echo "<tr><td colspan='5'>No se pudieron cargar las reuniones</td></tr>";
+                            echo "<tr><td colspan='6'>No se pudieron cargar las reuniones</td></tr>";
                         }
                         ?>
                     </tbody>
@@ -227,33 +335,37 @@
 
                 <!-- Botón para crear reunión -->
                 <div class="text-center mb-4">
-                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createModal">Crear Reunión</button>
+                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createModal">Crear
+                        Reunión</button>
                 </div>
 
                 <!-- Modal para crear nueva reunión -->
-                <div class="modal fade" id="createModal" tabindex="-1" aria-labelledby="createModalLabel" aria-hidden="true">
+                <div class="modal fade" id="createModal" tabindex="-1" aria-labelledby="createModalLabel"
+                    aria-hidden="true">
                     <div class="modal-dialog">
                         <div class="modal-content">
                             <div class="modal-header">
                                 <h5 class="modal-title" id="createModalLabel">Crear Nueva Reunión</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
                             </div>
                             <div class="modal-body">
-                                <form method="POST">
+                                <form action="controller/crear_reunion.php" method="POST">
                                     <div class="mb-3">
-                                        <label for="nombre" class="form-label">Nombre de la Reunión</label>
+                                        <label for="nombre" class="form-label">Nombre</label>
                                         <input type="text" class="form-control" id="nombre" name="nombre" required>
                                     </div>
                                     <div class="mb-3">
                                         <label for="etiquetas" class="form-label">Etiquetas</label>
                                         <select class="form-select" id="etiquetas" name="etiquetas[]" multiple required>
-                                            <option value="" disabled>Selecciona una o más etiquetas</option>
                                             <?php
-                                            $sql = $conexion->query("SELECT * FROM etiquetas");
-                                            if ($sql) {
-                                                while ($etiqueta = $sql->fetch_object()) { ?>
-                                                    <option value="<?= $etiqueta->id ?>"><?= $etiqueta->nombre ?> (<?= $etiqueta->color ?>)</option>
-                                            <?php }
+                                            $etiquetas = $conexion->query("SELECT * FROM etiquetas");
+                                            if ($etiquetas) {
+                                                while ($etiqueta = $etiquetas->fetch_object()) { ?>
+                                                    <option value="<?= $etiqueta->id ?>">
+                                                        <?= htmlspecialchars($etiqueta->nombre) ?> (<?= $etiqueta->color ?>)
+                                                    </option>
+                                                <?php }
                                             } else {
                                                 echo "<option disabled>Error al cargar etiquetas</option>";
                                             }
@@ -262,27 +374,30 @@
                                     </div>
                                     <div class="mb-3">
                                         <label for="fecha_inicio" class="form-label">Fecha Inicial</label>
-                                        <input type="datetime-local" class="form-control" id="fecha_inicio" name="fecha_inicio" required>
+                                        <input type="datetime-local" class="form-control" id="fecha_inicio"
+                                            name="fecha_inicio" required>
                                     </div>
                                     <div class="mb-3">
                                         <label for="fecha_fin" class="form-label">Fecha Final</label>
-                                        <input type="datetime-local" class="form-control" id="fecha_fin" name="fecha_fin" required>
+                                        <input type="datetime-local" class="form-control" id="fecha_fin"
+                                            name="fecha_fin" required>
                                     </div>
-                                    <button type="submit" class="btn btn-primary" name="btn_submit" value="ok">Crear Reunión</button>
-                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Salir</button>
+                                    <button type="submit" class="btn btn-primary" name="btn_submit" value="ok">Crear
+                                        Reunión</button>
+                                    <button type="button" class="btn btn-secondary"
+                                        data-bs-dismiss="modal">Salir</button>
                                 </form>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
 
-    <!-- Scripts -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- Script para evitar reenvío de formulario -->
-    <script type="text/javascript" src="Scripts/script.js"></script>
+
+            <!-- Scripts -->
+            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+            <!-- Script para evitar reenvío de formulario -->
+            <script type="text/javascript" src="Scripts/script.js"></script>
 </body>
 
 </html>
