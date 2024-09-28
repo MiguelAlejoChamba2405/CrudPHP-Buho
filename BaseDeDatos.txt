@@ -14,8 +14,8 @@ CREATE TABLE etiquetas (
     color VARCHAR(7) NOT NULL 
 );
 
--- Crear la tabla USUARIOS
-CREATE TABLE usuarios (
+-- Crear la tabla CONTACTOS
+CREATE TABLE contactos (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(100) NOT NULL,
     numero VARCHAR(15) NOT NULL,
@@ -24,12 +24,12 @@ CREATE TABLE usuarios (
 );
 
 -- Nueva tabla para poder guardar mas de una etiqueta :D
-CREATE TABLE usuario_etiquetas (
-    usuario_id INT NOT NULL,
+CREATE TABLE contacto_etiquetas (
+    contacto_id INT NOT NULL,
     etiqueta_id INT NOT NULL,
-    FOREIGN KEY (usuario_id) REFERENCES usuarios(id),
+    FOREIGN KEY (contacto_id) REFERENCES contactos(id),
     FOREIGN KEY (etiqueta_id) REFERENCES etiquetas(id),
-    PRIMARY KEY (usuario_id, etiqueta_id)
+    PRIMARY KEY (contacto_id, etiqueta_id)
 );
 
 -- Nueva tabla para guardar reuniones

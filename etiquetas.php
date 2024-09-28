@@ -78,7 +78,7 @@
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="navbar-nav ml-auto">
                         <li class="nav-item">
-                            <a class="nav-link" href="usuarios.php">Usuarios</a>
+                            <a class="nav-link" href="contactos.php">Contactos</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="etiquetas.php">Etiquetas</a>

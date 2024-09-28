@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Usuarios</title>
+    <title>contactos</title>
     <!-- CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
@@ -87,7 +87,7 @@
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="navbar-nav ml-auto">
                         <li class="nav-item">
-                            <a class="nav-link" href="usuarios.php">Usuarios</a>
+                            <a class="nav-link" href="contactos.php">Contactos</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="etiquetas.php">Etiquetas</a>
@@ -101,25 +101,25 @@
         </nav>
 
         <div class="container mt-4">
-            <h1 class="text-center mb-4">Usuarios</h1>
+            <h1 class="text-center mb-4">Contactos</h1>
 
             <!-- Conexiones a la base de datos -->
             <?php
             include "model/conx.php";
-            include "controller/registro_personal.php";
+            include "controller/registro_contacto.php";
             ?>
 
-            <!-- Listado de usuarios -->
+            <!-- Listado de contactos -->
             <div class="table-responsive">
                 <?php
                 $sql = $conexion->query("
-                    SELECT usuarios.id, usuarios.nombre, usuarios.numero, 
+                    SELECT contactos.id, contactos.nombre, contactos.numero, 
                     GROUP_CONCAT(etiquetas.nombre SEPARATOR ', ') AS etiqueta_nombre, 
                     GROUP_CONCAT(COALESCE(etiquetas.color, '') SEPARATOR ', ') AS colores
-                    FROM usuarios 
-                    LEFT JOIN usuario_etiquetas ON usuarios.id = usuario_etiquetas.usuario_id
-                    LEFT JOIN etiquetas ON usuario_etiquetas.etiqueta_id = etiquetas.id
-                    GROUP BY usuarios.id
+                    FROM contactos 
+                    LEFT JOIN contacto_etiquetas ON contactos.id = contacto_etiquetas.contacto_id
+                    LEFT JOIN etiquetas ON contacto_etiquetas.etiqueta_id = etiquetas.id
+                    GROUP BY contactos.id
                 ");
                 ?>
                 <table class="table table-striped table-bordered">
@@ -153,16 +153,16 @@
                                 </td>
                                 <td class="text-end">
                                     <div>
-                                        <!-- Formulario para eliminar usuario -->
-                                        <form method="POST" action="controller/eliminar_usuario.php" style="display:inline;">
-                                            <input type="hidden" name="id_usuario" value="<?= $datos->id ?>">
+                                        <!-- Formulario para eliminar contacto -->
+                                        <form method="POST" action="controller/eliminar_contacto.php" style="display:inline;">
+                                            <input type="hidden" name="id_contacto" value="<?= $datos->id ?>">
                                             <button type="submit" class="btn btn-danger"
-                                                onclick="return confirm('¿Estás seguro de que deseas eliminar a esta persona?');">
+                                                onclick="return confirm('¿Estás seguro de que deseas eliminar a este contacto?');">
                                                 <i class="fas fa-trash-alt"></i>
                                             </button>
                                         </form>
 
-                                        <!-- Botón para editar usuario -->
+                                        <!-- Botón para editar contacto -->
                                         <button type="button" class="btn btn-warning" data-bs-toggle="modal"
                                             data-bs-target="#editModal-<?= $datos->id ?>">
                                             <i class="fa-solid fa-pen"></i>
@@ -177,13 +177,13 @@
                                     <div class="modal-content">
                                         <div class="modal-header">
                                             <h5 class="modal-title" id="editModalLabel-<?= $datos->id ?>">
-                                                Modificar Usuario
+                                                Modificar contacto
                                             </h5>
                                             <button type="button" class="btn-close" data-bs-dismiss="modal"
                                                 aria-label="Close"></button>
                                         </div>
                                         <div class="modal-body">
-                                            <form action="controller/editar_usuario.php" method="POST">
+                                            <form action="controller/editar_contacto.php" method="POST">
                                                 <input type="hidden" name="id" value="<?= $datos->id ?>">
                                                 <div class="mb-3">
                                                     <label for="nombre-<?= $datos->id ?>" class="form-label">Nombre</label>
@@ -204,10 +204,10 @@
                                                         <option value="" disabled>Selecciona una o más etiquetas</option>
                                                         <?php
                                                         $etiquetasSql = $conexion->query("SELECT * FROM etiquetas");
-                                                        // Crear array de etiquetas del usuario actual
-                                                        $usuario_etiquetas = explode(", ", $datos->etiqueta_nombre);
+                                                        // Crear array de etiquetas del contacto actual
+                                                        $contacto_etiquetas = explode(", ", $datos->etiqueta_nombre);
                                                         while ($etiqueta = $etiquetasSql->fetch_object()) {
-                                                            $selected = in_array($etiqueta->nombre, $usuario_etiquetas) ? 'selected' : '';
+                                                            $selected = in_array($etiqueta->nombre, $contacto_etiquetas) ? 'selected' : '';
                                                         ?>
                                                             <option value="<?= $etiqueta->id ?>" <?= $selected ?>>
                                                                 <?= htmlspecialchars($etiqueta->nombre) ?>
@@ -226,28 +226,28 @@
                     </tbody>
                 </table>
 
-                <!-- Botón para crear usuario -->
+                <!-- Botón para crear contacto -->
                 <div class="text-center mb-4">
-                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createModal">Crear Usuario</button>
+                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createModal">Crear contacto</button>
                 </div>
 
-                <!-- Modal para crear nuevo usuario -->
+                <!-- Modal para crear nuevo contacto -->
                 <div class="modal fade" id="createModal" tabindex="-1" aria-labelledby="createModalLabel" aria-hidden="true">
                     <div class="modal-dialog">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h5 class="modal-title" id="createModalLabel">Crear Nuevo Usuario</h5>
+                                <h5 class="modal-title" id="createModalLabel">Crear Nuevo contacto</h5>
                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
                             <div class="modal-body">
                                 <form method="POST">
                                     <div class="mb-3">
-                                        <label for="usuario_nombre" class="form-label">Nombre</label>
-                                        <input type="text" class="form-control" id="usuario_nombre" name="usuario_nombre" required>
+                                        <label for="contacto_nombre" class="form-label">Nombre</label>
+                                        <input type="text" class="form-control" id="contacto_nombre" name="contacto_nombre" required>
                                     </div>
                                     <div class="mb-3">
-                                        <label for="usuario_numero" class="form-label">Número</label>
-                                        <input type="number" class="form-control" id="usuario_numero" name="usuario_numero" required>
+                                        <label for="contacto_numero" class="form-label">Número</label>
+                                        <input type="number" class="form-control" id="contacto_numero" name="contacto_numero" required>
                                     </div>
                                     <div class="mb-3">
                                         <label for="etiqueta_id" class="form-label">Etiquetas</label>
@@ -260,7 +260,7 @@
                                             <?php } ?>
                                         </select>
                                     </div>
-                                    <button type="submit" class="btn btn-primary" name="btn_submit" value="ok">Guardar Usuario</button>
+                                    <button type="submit" class="btn btn-primary" name="btn_submit" value="ok">Guardar contacto</button>
                                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Salir</button>
                                 </form>
                             </div>
