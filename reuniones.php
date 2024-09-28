@@ -350,7 +350,7 @@
                                     aria-label="Close"></button>
                             </div>
                             <div class="modal-body">
-                                <form action="controller/crear_reunion.php" method="POST">
+                                <form method="POST">
                                     <div class="mb-3">
                                         <label for="nombre" class="form-label">Nombre</label>
                                         <input type="text" class="form-control" id="nombre" name="nombre" required>
