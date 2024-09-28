@@ -103,7 +103,7 @@
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="navbar-nav ml-auto">
                         <li class="nav-item">
-                            <a class="nav-link" href="usuarios.php">Usuarios</a>
+                            <a class="nav-link" href="Contactos.php">Contactos</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="etiquetas.php">Etiquetas</a>
@@ -232,24 +232,24 @@
                                         WHERE reunion_id = $datos->id
                                     ");
 
-                                                $usuario_ids = [];
+                                                $contacto_ids = [];
 
-                                                // Para cada etiqueta obtenida, encontrar los usuarios asociados
+                                                // Para cada etiqueta obtenida, encontrar los contactos asociados
                                                 while ($etiqueta_id_obj = $etiquetas_ids_query->fetch_object()) {
                                                     $etiqueta_id = $etiqueta_id_obj->etiqueta_id;
 
-                                                    $usuarios_query = $conexion->query("
+                                                    $contactos_query = $conexion->query("
                                             SELECT u.id, u.nombre 
-                                            FROM usuario_etiquetas ue
-                                            JOIN usuarios u ON ue.usuario_id = u.id
+                                            FROM contacto_etiquetas ue
+                                            JOIN contactos u ON ue.contacto_id = u.id
                                             WHERE ue.etiqueta_id = $etiqueta_id
                                         ");
 
-                                                    if ($usuarios_query) {
-                                                        while ($usuario = $usuarios_query->fetch_object()) {
-                                                            if (!in_array($usuario->id, $usuario_ids)) {
-                                                                $usuario_ids[] = $usuario->id;
-                                                                echo "<div>" . htmlspecialchars($usuario->nombre) . "</div>";
+                                                    if ($contactos_query) {
+                                                        while ($contacto = $contactos_query->fetch_object()) {
+                                                            if (!in_array($contacto->id, $contacto_ids)) {
+                                                                $contacto_ids[] = $contacto->id;
+                                                                echo "<div>" . htmlspecialchars($contacto->nombre) . "</div>";
                                                             }
                                                         }
                                                     }

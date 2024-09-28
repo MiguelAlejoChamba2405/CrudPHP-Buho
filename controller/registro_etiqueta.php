@@ -6,7 +6,7 @@ if (isset($_POST['btn_submit'])) {
     $nombre = $_POST['etiqueta_nombre'];
     $color = $_POST['etiqueta_color'];
 
-    // Insertar el usuario
+    // Insertar el contacto
     $conexion->query("INSERT INTO etiquetas(nombre,color) values('$nombre','$color')");
 }
 ?>
