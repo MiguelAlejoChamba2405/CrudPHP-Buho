@@ -9,87 +9,25 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <style>
-        body {
-            background-color: #f8f9fa;
-            font-family: Arial, sans-serif;
-        }
-        .navbar {
-            background-color: #343a40;
-        }
-        .navbar-nav .nav-link {
-            color: #ffffff !important;
-        }
-        .navbar-nav .nav-link:hover {
-            color: #adb5bd !important;
-        }
-        .table {
-            margin-top: 20px;
-            border-radius: 0.5rem;
-            overflow: hidden;
-        }
-        .table thead th {
-            background-color: #495057;
-            color: #ffffff;
-        }
-        .table tbody tr:nth-child(odd) {
-            background-color: #ffffff;
-        }
-        .table tbody tr:nth-child(even) {
-            background-color: #f1f3f5;
-        }
-        .modal-header {
-            background-color: #343a40;
-            color: #ffffff;
-        }
-        .modal-footer {
-            background-color: #f8f9fa;
-        }
-        .btn-primary {
-            background-color: #007bff;
-            border: none;
-        }
-        .btn-primary:hover {
-            background-color: #0056b3;
-        }
-        .btn-danger {
-            background-color: #dc3545;
-            border: none;
-        }
-        .btn-danger:hover {
-            background-color: #c82333;
-        }
-        .btn-warning {
-            background-color: #ffc107;
-            border: none;
-        }
-        .btn-warning:hover {
-            background-color: #e0a800;
-        }
-    </style>
+    <link rel="stylesheet" href="css/style.css">
+
 </head>
 
 <body>
-    <div class="container-fluid">
-        <!-- Navbar -->
-        <nav class="navbar navbar-expand-lg navbar-dark">
-            <div class="container">
-                <a class="navbar-brand" href="#">Mi Aplicación</a>
-                <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                    <ul class="navbar-nav ml-auto">
-                        <li class="nav-item">
-                            <a class="nav-link" href="contactos.php">Contactos</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="etiquetas.php">Etiquetas</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="reuniones.php">Reuniones</a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </nav>
+    <div class="sidebar">
+        <h2>Mi Aplicación</h2>
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a class="nav-link" href="usuarios.php">Usuarios</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="etiquetas.php">Etiquetas</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="reuniones.php">Reuniones</a>
+            </li>
+        </ul>
+    </div>
 
         <div class="container mt-4">
             <h1 class="text-center mb-4">Etiquetas</h1>
@@ -216,7 +154,6 @@
 
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="Scripts/script.js"></script>
 </body>
 
 </html>
