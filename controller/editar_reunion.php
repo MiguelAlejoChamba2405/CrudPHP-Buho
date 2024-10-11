@@ -1,67 +1,47 @@
 <?php
-include "../model/conx.php";
+include "model/conx.php";
 
-if (isset($_POST['id'])) {
-    $id = $_POST['id'];
+if (isset($_POST['btn_submit'])) {
+    // Obtén los valores del formulario
     $nombre = $_POST['nombre'];
+    $etiquetas = $_POST['etiquetas']; // Array de etiquetas seleccionadas
     $fecha_inicio = $_POST['fecha_inicio'];
     $fecha_fin = $_POST['fecha_fin'];
-    $etiquetas = isset($_POST['etiquetas']) ? $_POST['etiquetas'] : []; // Asegúrate de que `etiquetas` siempre sea un array
+    $integrantes = $_POST['integrantes']; // Array de integrantes seleccionados
 
-    // Iniciar transacción para asegurar consistencia
-    $conexion->begin_transaction();
-
-    try {
-        // Actualizar información del usuario
-        $stmt = $conexion->prepare("UPDATE reuniones SET nombre=?, fecha_inicio=?, fecha_fin=? WHERE id=?");
-        if (!$stmt) {
-            throw new Exception("Error al preparar la consulta de actualización: " . $conexion->error);
-        }
-        $stmt->bind_param('sssi', $nombre, $fecha_inicio, $fecha_fin, $id);
-        if (!$stmt->execute()) {
-            throw new Exception("Error al ejecutar la consulta de actualización: " . $stmt->error);
-        }
+    // Inserta los datos en la tabla 'reuniones'
+    $stmt = $conexion->prepare("INSERT INTO reuniones (nombre, fecha_inicio, fecha_fin) VALUES (?, ?, ?)");
+    $stmt->bind_param('sss', $nombre, $fecha_inicio, $fecha_fin);
+    if ($stmt->execute()) {
+        $reunion_id = $stmt->insert_id; // Obtener el ID de la reunión recién insertada
         $stmt->close();
 
-        // Eliminar etiquetas actuales del usuario
-        $stmt = $conexion->prepare("DELETE FROM reunion_etiquetas WHERE reunion_id=?");
-        if (!$stmt) {
-            throw new Exception("Error al preparar la consulta de eliminación de etiquetas: " . $conexion->error);
-        }
-        $stmt->bind_param('i', $id);
-        if (!$stmt->execute()) {
-            throw new Exception("Error al ejecutar la consulta de eliminación de etiquetas: " . $stmt->error);
-        }
-        $stmt->close();
-
-        // Insertar nuevas etiquetas
-        $stmt = $conexion->prepare("INSERT INTO reunion_etiquetas (reunion_id, etiqueta_id) VALUES (?, ?)");
-        if (!$stmt) {
-            throw new Exception("Error al preparar la consulta de inserción de etiquetas: " . $conexion->error);
-        }
+        // Inserta las etiquetas asociadas en la tabla intermedia 'reunion_etiquetas'
+        $stmt_etiquetas = $conexion->prepare("INSERT INTO reunion_etiquetas (reunion_id, etiqueta_id) VALUES (?, ?)");
         foreach ($etiquetas as $etiqueta_id) {
-            $stmt->bind_param('ii', $id, $etiqueta_id);
-            if (!$stmt->execute()) {
-                throw new Exception("Error al ejecutar la consulta de inserción de etiquetas: " . $stmt->error);
-            }
+            $stmt_etiquetas->bind_param('ii', $reunion_id, $etiqueta_id);
+            $stmt_etiquetas->execute();
         }
-        $stmt->close();
+        $stmt_etiquetas->close();
 
-        // Confirmar transacción
-        $conexion->commit();
+        // Crear la carpeta para guardar la reunión
+        $directorio = 'reunion_usuario/' . $reunion_id; // Carpeta específica para la reunión
+        if (!is_dir($directorio)) {
+            mkdir($directorio, 0755, true); // Crear la carpeta si no existe
+        }
 
-        // Redirigir con mensaje de éxito
-        header("Location: ../reuniones.php?message=" . urlencode("Reunión actualizada correctamente."));
-        exit;
-    } catch (Exception $e) {
-        // Revertir transacción en caso de error
-        $conexion->rollback();
+        // Guardar los contactos en la base de datos
+        $stmt_usuario = $conexion->prepare("INSERT INTO reunion_usuarios (reunion_id, usuario_id) VALUES (?, ?)");
+        foreach ($integrantes as $integrante_id) {
+            $stmt_usuario->bind_param('ii', $reunion_id, $integrante_id);
+            $stmt_usuario->execute();
+        }
+        $stmt_usuario->close();
 
-        // Redirigir con mensaje de error
-        header("Location: ../reuniones.php?message=" . urlencode("Error al actualizar la reunión: " . $e->getMessage()));
-        exit;
+        // Confirmar creación de la reunión
+        echo "Reunión creada exitosamente y contactos guardados.";
+    } else {
+        echo "Error al crear la reunión: " . $conexion->error;
     }
-
-    $conexion->close();
 }
 ?>
