@@ -48,3 +48,11 @@ CREATE TABLE reunion_etiquetas (
     FOREIGN KEY (reunion_id) REFERENCES reuniones(id),
     FOREIGN KEY (etiqueta_id) REFERENCES etiquetas(id)
 );
+-- Tabla donde se guardaran los usuarios de reunion
+CREATE TABLE reunion_usuarios (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    reunion_id INT NOT NULL,
+    usuario_id INT NOT NULL,
+    FOREIGN KEY (reunion_id) REFERENCES reuniones(id),
+    FOREIGN KEY (usuario_id) REFERENCES usuarios(id)
+);
